@@ -1,0 +1,5 @@
+{
+  "name": "The Journal",
+  "description": "A professional trading journal with integrated confluence checklists, automated R/R calculation, and performance calendar.",
+  "requestFramePermissions": []
+}
