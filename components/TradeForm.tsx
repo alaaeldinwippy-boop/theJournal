@@ -21,21 +21,21 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
   // Form State
   const [formData, setFormData] = useState<Partial<Trade>>({
     date: new Date().toISOString().split('T')[0],
-    platform: [Platform.FTMO_ACCOUNT],
-    session: Session.NEW_YORK,
-    timeframe: Timeframe.M15,
-    instrument: Instrument.XAUUSD,
-    direction: Direction.LONG,
+    platform: [],
+    session: '' as unknown as Session,
+    timeframe: '' as unknown as Timeframe,
+    instrument: '' as unknown as Instrument,
+    direction: '' as unknown as Direction,
     entryPrice: 0,
     takeProfitPrice: 0,
     stopLevelPrice: 0,
     points: 0,
-    outcome: Outcome.PENDING,
+    outcome: '' as unknown as Outcome,
     riskReward: 0,
     realizedPnL: 0,
     setups: [],
     confluences: [],
-    mindset: Mindset.CALM,
+    mindset: '' as unknown as Mindset,
     followedPlan: true,
     notes: '',
     checklistData: {},
@@ -125,21 +125,21 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
     setChecklist({});
     setFormData({
       date: new Date().toISOString().split('T')[0],
-      platform: [Platform.FTMO_ACCOUNT],
-      session: Session.NEW_YORK,
-      timeframe: Timeframe.M15,
-      instrument: Instrument.XAUUSD,
-      direction: Direction.LONG,
+      platform: [],
+      session: '' as unknown as Session,
+      timeframe: '' as unknown as Timeframe,
+      instrument: '' as unknown as Instrument,
+      direction: '' as unknown as Direction,
       entryPrice: 0,
       takeProfitPrice: 0,
       stopLevelPrice: 0,
       points: 0,
-      outcome: Outcome.PENDING,
+      outcome: '' as unknown as Outcome,
       riskReward: 0,
       realizedPnL: 0,
       setups: [],
       confluences: [],
-      mindset: Mindset.CALM,
+      mindset: '' as unknown as Mindset,
       followedPlan: true,
       notes: '',
       imageUrl: '',
@@ -340,10 +340,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                             <div className="relative">
                                 <select
                                     name="session"
-                                    value={formData.session}
+                                    value={formData.session || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
+                                    <option value="">Select session</option>
                                     {SESSION_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -360,10 +361,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                             <div className="relative">
                                 <select
                                     name="timeframe"
-                                    value={formData.timeframe}
+                                    value={formData.timeframe || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
+                                    <option value="">Select timeframe</option>
                                     {TIMEFRAME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -377,10 +379,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                             <div className="relative">
                                 <select
                                     name="instrument"
-                                    value={formData.instrument}
+                                    value={formData.instrument || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
+                                    <option value="">Select instrument</option>
                                     {INSTRUMENT_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -394,10 +397,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                             <div className="relative">
                                 <select
                                     name="direction"
-                                    value={formData.direction}
+                                    value={formData.direction || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
+                                    <option value="">Select direction</option>
                                     {DIRECTION_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -462,10 +466,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                             <div className="relative">
                                 <select
                                     name="outcome"
-                                    value={formData.outcome}
+                                    value={formData.outcome || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
+                                    <option value="">Select outcome</option>
                                     {OUTCOME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -570,10 +575,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                             <div className="relative">
                                 <select
                                     name="mindset"
-                                    value={formData.mindset}
+                                    value={formData.mindset || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
+                                    <option value="">Select mindset</option>
                                     {MINDSET_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
