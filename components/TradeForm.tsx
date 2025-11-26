@@ -344,7 +344,6 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="" disabled>Select session</option>
                                     {SESSION_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -365,7 +364,6 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="" disabled>Select timeframe</option>
                                     {TIMEFRAME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -383,7 +381,6 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="" disabled>Select instrument</option>
                                     {INSTRUMENT_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -401,7 +398,6 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="" disabled>Select direction</option>
                                     {DIRECTION_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -470,7 +466,6 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="" disabled>Select outcome</option>
                                     {OUTCOME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -579,7 +574,6 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                                     onChange={handleInputChange}
                                     className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 >
-                                    <option value="" disabled>Select mindset</option>
                                     {MINDSET_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
