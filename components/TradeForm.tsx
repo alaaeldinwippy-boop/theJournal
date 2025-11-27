@@ -83,6 +83,14 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
     return Math.round((currentWeight / TOTAL_WEIGHT) * 100);
   }, [checklist]);
 
+  useEffect(() => {
+    if (checklistScore >= 75) {
+      setFormData(prev => ({ ...prev, followedPlan: true }));
+    } else {
+      setFormData(prev => ({ ...prev, followedPlan: false }));
+    }
+  }, [checklistScore]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     let parsedValue: string | number | boolean = value;
@@ -598,12 +606,13 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
 
                     {/* Checkbox */}
                     <div className="mb-6">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.followedPlan ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-custom-main group-hover:border-slate-400'}`}>
+                        <label className={`flex items-center gap-3 ${checklistScore >= 75 ? 'cursor-pointer group' : 'cursor-not-allowed opacity-60'}`}>
+                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.followedPlan ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-custom-main'} ${checklistScore >= 75 ? 'group-hover:border-slate-400' : ''}`}>
                                 {formData.followedPlan && <Check size={14} className="text-white" />}
                             </div>
-                            <input type="checkbox" name="followedPlan" checked={formData.followedPlan} onChange={handleInputChange} className="hidden" />
+                            <input type="checkbox" name="followedPlan" checked={formData.followedPlan} onChange={handleInputChange} disabled={checklistScore < 75} className="hidden" />
                             <span className="text-sm font-bold text-slate-700 dark:text-white">Followed Trading Plan</span>
+                            {checklistScore < 75 && <span className="text-xs text-slate-500 dark:text-slate-400">(Require 75% checklist score)</span>}
                         </label>
                     </div>
 
