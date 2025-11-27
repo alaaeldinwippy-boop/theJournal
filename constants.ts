@@ -9,20 +9,18 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   // 15m Chart Setup
   { id: 'm15_structure', label: 'Confirm market structure (trend continuation or reversal shift)', weight: 8, category: '15m Chart Setup' },
   { id: 'm15_swing', label: 'Identify recent swing high/low and mark POI', weight: 8, category: '15m Chart Setup' },
-  { id: 'm15_macd', label: 'MACD: crossover & histogram direction', weight: 5, category: '15m Chart Setup' },
-  { id: 'm15_emas', label: 'EMAs: 9, 21, 50, 200 alignment & slope', weight: 5, category: '15m Chart Setup' },
+  { id: 'm15_macd', label: 'Confirm MACD and EMA with the direction', weight: 5, category: '15m Chart Setup' },
+  { id: 'm15_emas', label: 'Price returns to POI', weight: 5, category: '15m Chart Setup' },
 
   // Micro MSS on 1m
-  { id: 'm1_fib', label: 'Entry Zone in 61.8%–70.5% Fib retracement', weight: 8, category: 'Micro MSS on 1m' },
-  { id: 'm1_sweep', label: 'Look for small Liquidity Sweep → Break of Structure', weight: 10, category: 'Micro MSS on 1m' },
-  { id: 'm1_200ema', label: 'Price touches 200 EMA', weight: 6, category: 'Micro MSS on 1m' },
-  { id: 'm1_macd_align', label: 'Ensure MACD crossover aligns with direction', weight: 6, category: 'Micro MSS on 1m' },
+  { id: 'm1_sweep', label: 'Market Structure Shift in the desired direction', weight: 10, category: 'Micro MSS on 1m' },
+  { id: 'm1_200ema', label: 'Price returns to micro POI', weight: 6, category: 'Micro MSS on 1m' },
+  { id: 'm1_macd_align', label: 'Ensure MACD and EMA align', weight: 6, category: 'Micro MSS on 1m' },
 
   // Risk Management
   { id: 'rm_rr', label: 'Risk/Reward 1/2 or more', weight: 10, category: 'Risk Management' },
-  { id: 'rm_sl', label: 'Stop Loss: just beyond 1m HL (long) / LH (short)', weight: 8, category: 'Risk Management' },
-  { id: 'rm_tp', label: 'Take Profit: next 15m structure level or 2–3R or Fib levels -25%, -50% or -75%', weight: 4, category: 'Risk Management' },
-  { id: 'rm_candle', label: 'Candlestick Confluence', weight: 4, category: 'Risk Management' },
+  { id: 'rm_candle', label: 'TP and SL placed accurately', weight: 8, category: 'Risk Management' },
+  { id: 'rm_confluence', label: 'Candlestick Confluence', weight: 4, category: 'Risk Management' },
 ];
 
 export const TOTAL_WEIGHT = CHECKLIST_ITEMS.reduce((acc, item) => acc + item.weight, 0);
