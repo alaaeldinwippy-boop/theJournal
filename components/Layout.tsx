@@ -55,12 +55,12 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, onNavigate, user,
       <header className="safe-top h-16 box-content border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-custom-panel flex items-center justify-between px-6 shrink-0 z-40 relative">
         <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
-                 <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/20">
+                 <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/20 md:flex hidden">
                     <Book size={18} />
                  </div>
                  <h1 className="text-lg font-bold text-slate-900 dark:text-white hidden md:block">The Journal</h1>
             </div>
-          
+
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
             <NavButton view="dashboard" icon={LayoutDashboard} label="Dashboard" />

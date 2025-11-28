@@ -51,7 +51,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, onAddTrade, onDeleteTrade
     // Sort trades by date
     const sorted = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     let cumulative = 0;
-    
+
     if (sorted.length === 0) return [];
 
     const data = sorted.map(t => {
@@ -62,18 +62,19 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, onAddTrade, onDeleteTrade
             if (t.outcome === Outcome.WIN) pnl = 100 * (t.riskReward || 2);
             else if (t.outcome === Outcome.LOSS) pnl = -100;
         }
-        
+
         cumulative += pnl;
         return {
             date: new Date(t.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
             fullDate: t.date,
             value: cumulative,
-            pnl: pnl
+            pnl: pnl,
+            isPositive: cumulative >= 0
         };
     });
 
     // Add a starting point if desired, or just show trades
-    return [{ date: 'Start', value: 0, pnl: 0, fullDate: '' }, ...data];
+    return [{ date: 'Start', value: 0, pnl: 0, fullDate: '', isPositive: true }, ...data];
   }, [trades]);
 
   const recentTrades = [...trades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
@@ -145,40 +146,47 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, onAddTrade, onDeleteTrade
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                     <defs>
-                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <linearGradient id="colorPositive" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
                             <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                         </linearGradient>
+                        <linearGradient id="colorNegative" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                        </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} vertical={false} />
-                    <XAxis 
-                        dataKey="date" 
-                        stroke="#64748b" 
-                        tick={{fill: '#64748b', fontSize: 12}} 
+                    <XAxis
+                        dataKey="date"
+                        stroke="#64748b"
+                        tick={{fill: '#64748b', fontSize: 12}}
                         tickLine={false}
                         axisLine={false}
                         minTickGap={30}
                     />
-                    <YAxis 
-                        stroke="#64748b" 
-                        tick={{fill: '#64748b', fontSize: 12}} 
+                    <YAxis
+                        stroke="#64748b"
+                        tick={{fill: '#64748b', fontSize: 12}}
                         tickLine={false}
                         axisLine={false}
                         tickFormatter={(value) => `$${value}`}
                     />
-                    <Tooltip 
+                    <Tooltip
                         contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px', color: '#f8fafc' }}
                         itemStyle={{ color: '#10b981' }}
-                        formatter={(value: number) => [`$${value.toFixed(2)}`, 'Cumulative P&L']}
+                        formatter={(value: number) => {
+                            const color = value >= 0 ? '#10b981' : '#ef4444';
+                            return [`$${value.toFixed(2)}`, 'Cumulative P&L'];
+                        }}
                         labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
                     />
-                    <Area 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="#10b981" 
+                    <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#10b981"
                         strokeWidth={2}
-                        fillOpacity={1} 
-                        fill="url(#colorValue)" 
+                        fillOpacity={1}
+                        fill="url(#colorPositive)"
                     />
                 </AreaChart>
             </ResponsiveContainer>

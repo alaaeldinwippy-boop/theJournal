@@ -8,7 +8,7 @@ import {
   TIMEFRAME_OPTIONS, INSTRUMENT_OPTIONS, DIRECTION_OPTIONS, OUTCOME_OPTIONS, 
   SETUP_OPTIONS, CONFLUENCE_OPTIONS, MINDSET_OPTIONS 
 } from '../constants';
-import { Save, RefreshCw, Upload, Check, X, ChevronDown } from 'lucide-react';
+import { Save, RefreshCw, Upload, Check, X, ChevronDown, Plus, Trash2, Edit2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface TradeFormProps {
@@ -44,6 +44,11 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
 
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(CHECKLIST_ITEMS);
+  const [editingItem, setEditingItem] = useState<{ id: string; label: string; category: string } | null>(null);
+  const [newItemLabel, setNewItemLabel] = useState('');
+  const [newItemCategory, setNewItemCategory] = useState('');
+  const [showAddItemModal, setShowAddItemModal] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -118,6 +123,37 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
     setChecklist(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const handleAddChecklistItem = () => {
+    if (newItemLabel.trim() && newItemCategory.trim()) {
+      const newItem: ChecklistItem = {
+        id: `custom_${uuidv4()}`,
+        label: newItemLabel,
+        weight: 5,
+        category: newItemCategory,
+      };
+      setChecklistItems([...checklistItems, newItem]);
+      setNewItemLabel('');
+      setNewItemCategory('');
+      setShowAddItemModal(false);
+    }
+  };
+
+  const handleRemoveChecklistItem = (id: string) => {
+    setChecklistItems(checklistItems.filter(item => item.id !== id));
+    setChecklist(prev => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
+  };
+
+  const handleUpdateChecklistItem = (id: string, newLabel: string) => {
+    setChecklistItems(checklistItems.map(item =>
+      item.id === id ? { ...item, label: newLabel } : item
+    ));
+    setEditingItem(null);
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -169,12 +205,12 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
 
   const groupedChecklist = useMemo(() => {
     const groups: Record<string, ChecklistItem[]> = {};
-    CHECKLIST_ITEMS.forEach(item => {
+    checklistItems.forEach(item => {
       if (!groups[item.category]) groups[item.category] = [];
       groups[item.category].push(item);
     });
     return groups;
-  }, []);
+  }, [checklistItems]);
 
   const getCategoryPercentage = (categoryItems: ChecklistItem[]) => {
     const total = categoryItems.reduce((acc, i) => acc + i.weight, 0);
@@ -221,29 +257,73 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                     <h3 className="font-semibold text-slate-800 dark:text-slate-200">{category}</h3>
                     <span className={`text-sm font-bold ${percent === 100 ? 'text-emerald-500 dark:text-emerald-400' : 'text-blue-500 dark:text-blue-400'}`}>{percent}%</span>
                 </div>
-                <div className="p-2">
+                <div className="p-2 space-y-1">
                     {(items as ChecklistItem[]).map(item => (
-                        <div 
+                        <div
                             key={item.id}
-                            onClick={() => toggleChecklistItem(item.id)}
-                            className="flex items-center p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg cursor-pointer group transition-colors"
+                            className="flex items-center p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg group transition-colors"
                         >
-                            <div className={`
-                                w-5 h-5 rounded border mr-4 flex items-center justify-center transition-all
-                                ${checklist[item.id] ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600 group-hover:border-slate-400 dark:group-hover:border-slate-500 bg-white dark:bg-transparent'}
-                            `}>
-                                {checklist[item.id] && <Check size={14} className="text-white" />}
+                            <button
+                                onClick={() => toggleChecklistItem(item.id)}
+                                className="flex-shrink-0 cursor-pointer"
+                            >
+                                <div className={`
+                                    w-5 h-5 rounded border mr-4 flex items-center justify-center transition-all
+                                    ${checklist[item.id] ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600 group-hover:border-slate-400 dark:group-hover:border-slate-500 bg-white dark:bg-transparent'}
+                                `}>
+                                    {checklist[item.id] && <Check size={14} className="text-white" />}
+                                </div>
+                            </button>
+                            {editingItem?.id === item.id ? (
+                                <input
+                                    type="text"
+                                    value={editingItem.label}
+                                    onChange={(e) => setEditingItem({ ...editingItem, label: e.target.value })}
+                                    onBlur={() => handleUpdateChecklistItem(item.id, editingItem.label)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleUpdateChecklistItem(item.id, editingItem.label);
+                                        if (e.key === 'Escape') setEditingItem(null);
+                                    }}
+                                    autoFocus
+                                    className="flex-1 bg-blue-50 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700 rounded px-2 py-1 text-sm text-slate-900 dark:text-white outline-none"
+                                />
+                            ) : (
+                                <span className={`flex-1 cursor-pointer ${checklist[item.id] ? 'text-slate-800 dark:text-slate-200' : 'text-slate-500 dark:text-slate-400'} text-sm font-medium transition-colors`}>
+                                    {item.label}
+                                </span>
+                            )}
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                <button
+                                    onClick={() => setEditingItem({ id: item.id, label: item.label, category: item.category })}
+                                    className="p-1 text-slate-500 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors"
+                                    title="Edit"
+                                >
+                                    <Edit2 size={14} />
+                                </button>
+                                <button
+                                    onClick={() => handleRemoveChecklistItem(item.id)}
+                                    className="p-1 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded transition-colors"
+                                    title="Remove"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
                             </div>
-                            <span className={`${checklist[item.id] ? 'text-slate-800 dark:text-slate-200' : 'text-slate-500 dark:text-slate-400'} text-sm font-medium transition-colors`}>
-                                {item.label}
-                            </span>
                         </div>
                     ))}
                 </div>
             </div>
            );
         })}
-        
+
+        {/* Add New Checklist Item Button */}
+        <button
+          onClick={() => setShowAddItemModal(true)}
+          className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+        >
+          <Plus size={16} />
+          Add Checklist Item
+        </button>
+
         {/* Score Dashboard matching the image design */}
         <div className="mt-8 space-y-4">
             <div className="grid grid-cols-4 gap-4">
@@ -655,6 +735,74 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSave, onCancel, initialData }) 
                     </div>
                 </form>
             </div>
+        </div>
+      )}
+
+      {/* Add Checklist Item Modal */}
+      {showAddItemModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-custom-panel border border-slate-200 dark:border-slate-800 rounded-xl p-6 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Add Checklist Item</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">Item Label</label>
+                <input
+                  type="text"
+                  value={newItemLabel}
+                  onChange={(e) => setNewItemLabel(e.target.value)}
+                  placeholder="e.g., Price returns to POI"
+                  className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-900 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAddChecklistItem();
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">Category</label>
+                <select
+                  value={newItemCategory}
+                  onChange={(e) => setNewItemCategory(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-900 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
+                >
+                  <option value="">Select a category</option>
+                  {Object.keys(groupedChecklist).map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                  <option value="Custom">Custom Category</option>
+                </select>
+              </div>
+              {newItemCategory === 'Custom' && (
+                <div>
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">New Category Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., My Custom Category"
+                    className="w-full bg-slate-50 dark:bg-custom-main border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-900 dark:text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                    onChange={(e) => setNewItemCategory(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowAddItemModal(false);
+                  setNewItemLabel('');
+                  setNewItemCategory('');
+                }}
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddChecklistItem}
+                disabled={!newItemLabel.trim() || !newItemCategory.trim()}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Item
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

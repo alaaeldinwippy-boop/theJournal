@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import TradeForm from './components/TradeForm';
 import Calendar from './components/Calendar';
 import TradesList from './components/TradesList';
+import TradeViewModal from './components/TradeViewModal';
 import { getTrades, saveTrade, deleteTrade } from './services/storage';
 import { getSession, logout } from './services/auth';
 import { Trade, User } from './types';
@@ -15,6 +16,7 @@ const App: React.FC = () => {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
+  const [viewingTrade, setViewingTrade] = useState<Trade | null>(null);
 
   useEffect(() => {
     const session = getSession();
@@ -96,23 +98,26 @@ const App: React.FC = () => {
                 />
             );
         case 'calendar':
-            return <Calendar trades={trades} />;
+            return <Calendar trades={trades} onViewTrade={setViewingTrade} />;
         case 'trades':
-            return <TradesList trades={trades} onDeleteTrade={handleDeleteTrade} onAddTrade={handleAddTrade} onEditTrade={handleEditTrade} />;
+            return <TradesList trades={trades} onDeleteTrade={handleDeleteTrade} onAddTrade={handleAddTrade} onEditTrade={handleEditTrade} onViewTrade={setViewingTrade} />;
         default:
             return <Dashboard trades={trades} onAddTrade={handleAddTrade} onDeleteTrade={handleDeleteTrade} />;
     }
   };
 
   return (
-    <Layout 
-      activeView={view} 
-      onNavigate={setView}
-      user={user}
-      onLogout={handleLogout}
-    >
-      {renderContent()}
-    </Layout>
+    <>
+      <Layout
+        activeView={view}
+        onNavigate={setView}
+        user={user}
+        onLogout={handleLogout}
+      >
+        {renderContent()}
+      </Layout>
+      <TradeViewModal trade={viewingTrade} onClose={() => setViewingTrade(null)} />
+    </>
   );
 };
 

@@ -4,10 +4,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CalendarProps {
   trades: Trade[];
+  onViewTrade?: (trade: Trade) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ trades }) => {
+const Calendar: React.FC<CalendarProps> = ({ trades, onViewTrade }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewingTrades, setViewingTrades] = useState<Trade[] | null>(null);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -125,10 +127,13 @@ const Calendar: React.FC<CalendarProps> = ({ trades }) => {
                     const isNegative = dayPnL < 0;
 
                     return (
-                        <div key={idx} className={`
-                            relative border-r border-b border-slate-200 dark:border-slate-800/50 p-2 flex flex-col justify-between transition-colors
+                        <button
+                            key={idx}
+                            onClick={() => cell.trades.length > 0 && setViewingTrades(cell.trades)}
+                            className={`
+                            relative border-r border-b border-slate-200 dark:border-slate-800/50 p-2 flex flex-col justify-between transition-colors text-left
                             ${isPositive ? 'bg-emerald-50 dark:bg-emerald-900/10' : isNegative ? 'bg-rose-50 dark:bg-rose-900/10' : 'bg-white dark:bg-custom-panel'}
-                            hover:bg-slate-100 dark:hover:bg-slate-800/50
+                            ${cell.trades.length > 0 ? 'hover:bg-slate-200 dark:hover:bg-slate-700/50 cursor-pointer' : 'hover:bg-slate-100 dark:hover:bg-slate-800/50'}
                         `}>
                             <span className={`text-sm font-medium ${cell.trades.length > 0 ? 'text-slate-800 dark:text-slate-300' : 'text-slate-400 dark:text-slate-600'}`}>{cell.day}</span>
                             {cell.trades.length > 0 && (
@@ -141,7 +146,7 @@ const Calendar: React.FC<CalendarProps> = ({ trades }) => {
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </button>
                     );
                 })}
              </div>
@@ -175,6 +180,47 @@ const Calendar: React.FC<CalendarProps> = ({ trades }) => {
             )}
         </div>
       </div>
+
+      {/* Day Trades Modal */}
+      {viewingTrades && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-custom-panel border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl animate-in zoom-in-95 duration-200 max-w-xl w-full">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                Trades for {viewingTrades[0] ? new Date(viewingTrades[0].date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }) : ''}
+              </h3>
+              <button
+                onClick={() => setViewingTrades(null)}
+                className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 max-h-[60vh] overflow-y-auto space-y-3">
+              {viewingTrades.map((trade) => (
+                <button
+                  key={trade.id}
+                  onClick={() => {
+                    onViewTrade?.(trade);
+                    setViewingTrades(null);
+                  }}
+                  className="w-full text-left p-3 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-700"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold text-slate-900 dark:text-white">{trade.instrument}</div>
+                    <div className={`text-sm font-bold ${trade.outcome === 'Win' ? 'text-emerald-600 dark:text-emerald-400' : trade.outcome === 'Loss' ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400'}`}>
+                      {trade.direction}
+                    </div>
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {trade.timeframe} • {trade.entryPrice} → {trade.outcome === 'Win' ? trade.takeProfitPrice : trade.stopLevelPrice}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

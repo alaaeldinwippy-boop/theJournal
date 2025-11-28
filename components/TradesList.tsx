@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Trade, Outcome } from '../types';
-import { Trash2, Edit, X, Filter } from 'lucide-react';
+import { Trash2, Edit, X, Filter, Eye } from 'lucide-react';
 import { INSTRUMENT_OPTIONS, OUTCOME_OPTIONS } from '../constants';
 
 interface TradesListProps {
@@ -8,9 +8,10 @@ interface TradesListProps {
   onDeleteTrade?: (id: string) => void;
   onAddTrade: () => void;
   onEditTrade: (trade: Trade) => void;
+  onViewTrade?: (trade: Trade) => void;
 }
 
-const TradesList: React.FC<TradesListProps> = ({ trades, onDeleteTrade, onAddTrade, onEditTrade }) => {
+const TradesList: React.FC<TradesListProps> = ({ trades, onDeleteTrade, onAddTrade, onEditTrade, onViewTrade }) => {
   const [filterInstrument, setFilterInstrument] = useState<string>('All');
   const [filterOutcome, setFilterOutcome] = useState<string>('All');
   const [startDate, setStartDate] = useState<string>('');
@@ -161,15 +162,16 @@ const TradesList: React.FC<TradesListProps> = ({ trades, onDeleteTrade, onAddTra
                              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{trade.instrument}</h3>
                              <span className="text-xs font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">{trade.direction}</span>
                              <span className={`text-xs font-bold uppercase px-2 py-0.5 rounded ${
-                                 trade.outcome === Outcome.WIN ? 'bg-blue-600 text-white' : 
+                                 trade.outcome === Outcome.WIN ? 'bg-blue-600 text-white' :
                                  trade.outcome === Outcome.LOSS ? 'bg-rose-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                              }`}>
                                  {trade.outcome}
                              </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-slate-500 dark:text-slate-400 mb-3">
-                            <div>Entry <span className="text-slate-800 dark:text-slate-200 font-mono ml-2">{trade.entryPrice}</span></div>
-                            <div>Exit <span className="text-slate-800 dark:text-slate-200 font-mono ml-2">{trade.takeProfitPrice}</span></div>
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400 mb-3">
+                            <div>Entry <span className="text-slate-800 dark:text-slate-200 font-mono ml-2 block text-xs">{trade.entryPrice}</span></div>
+                            <div>Exit <span className="text-slate-800 dark:text-slate-200 font-mono ml-2 block text-xs">{trade.outcome === Outcome.WIN ? trade.takeProfitPrice : trade.outcome === Outcome.LOSS ? trade.stopLevelPrice : trade.takeProfitPrice}</span></div>
+                            <div>R/R <span className="text-slate-800 dark:text-slate-200 font-mono ml-2 block text-xs">{trade.riskReward.toFixed(2)}</span></div>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-3">
                              {/* Display platforms as tags */}
@@ -182,7 +184,7 @@ const TradesList: React.FC<TradesListProps> = ({ trades, onDeleteTrade, onAddTra
                     <div className="flex flex-col items-start md:items-end justify-center min-w-[120px]">
                         <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">P&L</div>
                         <div className={`text-2xl font-bold ${
-                            displayPnL > 0 ? 'text-emerald-500 dark:text-emerald-400' : 
+                            displayPnL > 0 ? 'text-emerald-500 dark:text-emerald-400' :
                             displayPnL < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-slate-400'
                         }`}>
                             {displayPnL > 0 ? '+' : ''}${Math.abs(displayPnL).toFixed(2)}
@@ -190,15 +192,14 @@ const TradesList: React.FC<TradesListProps> = ({ trades, onDeleteTrade, onAddTra
                     </div>
                 </div>
 
-                {trade.notes && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm">
-                        <span className="text-slate-400 text-xs block mb-1 uppercase">Notes</span>
-                        <span className="text-slate-600 dark:text-slate-300">{trade.notes}</span>
-                    </div>
-                )}
-                
                 <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                     <button 
+                     <button
+                        onClick={() => onViewTrade?.(trade)}
+                        className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
+                        title="View trade">
+                        <Eye size={16} />
+                     </button>
+                     <button
                         onClick={() => onEditTrade(trade)}
                         className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg transition-colors">
                         <Edit size={16} />
@@ -209,7 +210,7 @@ const TradesList: React.FC<TradesListProps> = ({ trades, onDeleteTrade, onAddTra
                 </div>
 
                 <div className="mt-4 flex items-center gap-2 text-xs text-slate-400">
-                     <span>{new Date(trade.date).toLocaleString()}</span>
+                     <span>{new Date(trade.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })}</span>
                      <span>•</span>
                      <span>{trade.timeframe}</span>
                 </div>
